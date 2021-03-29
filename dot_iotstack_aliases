@@ -1,4 +1,4 @@
-printf "\nUseful Docker aliases:\n"
+printf "\nUzitecne aliasy pro Docker:\n"
 
 if [ -e "$HOME/IOTstack/services/adguardhome" ] ; then
 
@@ -114,7 +114,7 @@ DNET() {
 RECREATE() {
 
    if [ "$#" -ne 1 ]; then
-      echo "Usage: RECREATE container"
+      echo "Pouziti: RECREATE kontejner"
       return 
    fi
 
@@ -127,7 +127,7 @@ RECREATE() {
 TERMINATE() {
 
    if [ "$#" -ne 1 ]; then
-      echo "Usage: TERMINATE container"
+      echo "Pouziti: TERMINATE kontejner"
       return
    fi
 
@@ -136,7 +136,7 @@ TERMINATE() {
 
 }
 
-echo "     Docker: DPS {<container> …}, DNET {<container> …}, IOTSTACK"
-echo "             UP {<container>}, BUILD {<container>}, REBUILD <container>"
-echo "             RECREATE <container>, RESTART <container>, TERMINATE <container>"
+echo "     Docker: DPS {<kontejner> …}, DNET {<kontejner> …}, IOTSTACK"
+echo "             UP {<kontejner>}, BUILD {<kontejner>}, REBUILD <kontejner>"
+echo "             RECREATE <kontejner>, RESTART <kontejner>, TERMINATE <kontejner>"
 echo "             DOWN, PULL"
