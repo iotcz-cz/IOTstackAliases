@@ -1,3 +1,10 @@
+# Užitečné aliasy pro práci s IOTstack
+
+Kompletní český návod naleznete přímo na webu:
+https://www.iotcz.cz/2021/03/28/navody/iotstack-nastaveni-aliasu/
+
+Chcete-li, můžete použít původní v angličtině:
+
 # Useful aliases for working with IOTstack
 
 When working with [IOTstack](https://github.com/SensorsIot/IOTstack), it is useful to automate many common tasks such as:
