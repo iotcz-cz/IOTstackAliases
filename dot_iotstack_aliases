@@ -92,6 +92,8 @@ alias               DOWN='docker-compose -f ~/IOTstack/docker-compose.yml down'
 alias               PULL='docker-compose -f ~/IOTstack/docker-compose.yml pull;docker images'
 alias            RESTART='docker-compose -f ~/IOTstack/docker-compose.yml restart'
 alias           IOTSTACK='cd ~/IOTstack'
+alias           aktualizuj='sudo apt update && sudo apt upgrade'
+
 
 DPS() {
    DPS_CMD="docker ps --format \"table {{.Names}}\t{{.RunningFor}}\t{{.Status}}\""
