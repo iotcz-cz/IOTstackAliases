@@ -22,13 +22,41 @@ Note:
 
 * This GitHub repository used to be a [gist](https://gist.github.com/Paraphraser/7612d3c780d284a502bd1f158c5186e8). Unfortunately, the copy-and-paste method of acquiring the aliases would occasionally cause problems when the original Unix `0x0A` line-endings (LF) were replaced with DOS/Windows `0x0D 0x0A` line-endings (CR+LF). The alias file would then fail. Providing the alias file via Git should reduce the likelihood of that happening.  
 
+## Prerequistes
+
+Make sure you are running an up-to-date version of `docker-compose` (1.29.1 or later):
+
+```
+$ docker-compose version
+docker-compose version 1.29.2, build unknown
+docker-py version: 5.0.0
+CPython version: 3.7.3
+OpenSSL version: OpenSSL 1.1.1d  10 Sep 2019
+```
+
+IOTstack installs `docker-compose` using `apt install`. That results in version 1.21.0, which is obsolete, and can't be upgraded using `apt upgrade`. If you discover that version 1.21.0 is installed on your system, you can upgrade like this:
+
+```
+$ cd ~/IOTstack
+$ docker-compose down
+$ sudo apt -y remove docker-compose
+$ sudo pip3 install -U docker-compose
+```  
+
+Then logout and login again.
+
+See also:
+
+* [Installing Docker for IOTstack](https://gist.github.com/Paraphraser/d119ae81f9e60a94e1209986d8c9e42f) (gist).
+* If you run into trouble with the `pip3` command, see [scripting-iotstack-installations](https://gist.github.com/Paraphraser/d119ae81f9e60a94e1209986d8c9e42f#scripting-iotstack-installations) in that same gist.
+
 ## Installation
 
 ### Step 1
 
 Login to your Raspberry Pi and clone this repository. The recommended commands are:
 
-```
+```bash
 $ mkdir -p "$HOME/.local"
 $ git clone https://github.com/Paraphraser/IOTstackAliases.git "$HOME/.local/IOTstackAliases"
 ```
@@ -37,7 +65,7 @@ $ git clone https://github.com/Paraphraser/IOTstackAliases.git "$HOME/.local/IOT
 
 Test the result like this:
 
-```
+```bash
 $ . "$HOME/.local/IOTstackAliases/dot_iotstack_aliases"
 ```
 
@@ -51,18 +79,16 @@ Notes:
 
 If you have done the first two steps correctly, you should get output like this:
 
-```
+```bash
 Useful Docker aliases:
-      Gitea: GITEA_SHELL, GITEA_SERVICES
-    Grafana: GRAFANA_SHELL, GRAFANA_SERVICES
-     Influx: influx, INFLUX_SHELL, INFLUX_SERVICES
-  Mosquitto: MOSQUITTO_SHELL, MOSQUITTO_SERVICES
-    NodeRed: NODERED_SHELL, NODERED_SERVICES, NODERED_DATA, DATABASES, FIRMWARE
-     PiHole: PIHOLE_SHELL, PIHOLE_SERVICES
-     Docker: DPS {<container> …}, DNET {<container> …}, IOTSTACK
-             UP {<container>}, BUILD {<container>}, REBUILD <container>
-             RECREATE <container>, RESTART <container>, TERMINATE <container>
-             DOWN, PULL
+       Grafana: GRAFANA_SHELL
+        Influx: influx, INFLUX_SHELL
+     Mosquitto: MOSQUITTO_SHELL
+       NodeRed: NODERED_SHELL, NODERED_DATA
+        Docker: BUILD     | DPS       | DNET      {<container> …}
+                PULL      | REBUILD   | RECREATE  {<container> …}
+                RESTART   | TERMINATE | UP        {<container> …}
+                DOWN, I, S, T, V
 ```
 
 If you get any error messages, go back and check your work. 
@@ -71,7 +97,7 @@ If you get any error messages, go back and check your work.
 
 To apply `dot_iotstack_aliases` each time you login, add this *source* statement:
 
-```
+```bash
 . "$HOME/.local/IOTstackAliases/dot_iotstack_aliases"
 ```
 
@@ -87,7 +113,7 @@ What's the difference? I'm glad you asked:
 
 You might be thinking, "I access my Raspberry Pi using both `ssh` and VNC so that means I should add the *source* statement to both files." Well, yes and no. There is a wrinkle. The `.profile` that you get by default already sources `.bashrc`, like this:
 
-```
+```bash
 # if running bash
 if [ -n "$BASH_VERSION" ]; then
    # include .bashrc if it exists
@@ -101,7 +127,7 @@ If you have **not** removed those lines from `.profile` then `.bashrc` is the co
 
 Here's an example of editing `.bashrc` using `vi`:
 
-```
+```bash
 $ vi ~/.bashrc
 G
 o
@@ -114,20 +140,20 @@ $
 In words:
 
 1. Launch "vi" with the target file.
-2. Press [SHIFT] and then press "G" to jump to the end of the file.
-3. Press "o" to open a new line after the last line in the file, and go into insert mode.
-4. Type the source statement as-is and press [RETURN] at the end of the line. Make sure you pay attention to these key points:
+2. Press <kbd>G</kbd> to jump to the end of the file.
+3. Press <kbd>o</kbd> to open a new line after the last line in the file, and go into insert mode.
+4. Type the source statement as-is and press <kbd>return</kbd> at the end of the line. Make sure you pay attention to these key points:
 
 	- The line starts with a period (`.`) followed by a space;
 	- There are **no** other spaces on the line; and
 	- Make sure you match the spelling **exactly**.Unix is case-sensitive.
 
-5. Press [ESC] to exit insert mode.
-6. Press ":" to move to command mode, "w" to write the in-memory buffer to the target file, and "q" to leave "vi".
+5. Press <kbd>esc</kbd> to exit insert mode.
+6. Press <kbd>:</kbd> to move to command mode, <kbd>w</kbd> to write the in-memory buffer to the target file, and <kbd>q</kbd> followed by <kbd>return</kbd> to leave "vi".
 
 Use the `tail` command to confirm your editing:
 
-```
+```bash
 $ tail -1 ~/.bashrc 
 ```
 
@@ -143,88 +169,198 @@ Worst case is that you will be unable to login to the new terminal session. This
 
 In the **new** terminal session, you should expect to see the same list of aliases shown in [Step 2](#step2).
 
-## Using the aliases
+## Using the aliases and shell functions
 
 I create most of my aliases using all-caps names. I think this makes it easier for auto-completion to do its work but, it's your system, so change it if you don't like it.
 
+The key advantage of these aliases is that they work from anywhere. You don't have to `cd ~/IOTstack` first.
+
 ### General-purpose aliases and shell functions
 
-The general-purpose aliases (and functions) are the ones listed under the "Docker" heading above.
+The general-purpose aliases (and functions) are the ones listed under the "Docker" heading above. They are described here in alphabetical order.
 
-* DPS (`docker ps`) gets you a short-form of what is running, with the advantage that the information for each container usually fits on one line. Optional arguments limit the display to named containers. 
-* DNET (also `docker ps`) but with a different list of columns, focusing on the networking aspects (ports etc). Optional arguments limit the display to named containers.
-* IOTSTACK is `cd ~/IOTstack` and, on my system, just typing "IO" and hitting TAB auto-completes.
-* UP (`docker-compose up -d`) by itself brings up your entire stack; UP with a container name brings up just that container. Its key advantage is that it works from anywhere. You don't have to `cd ~/IOTstack` first.
-* BUILD (`docker-compose up -d --build`) just adds the `--build` flag to cause containers that are built with a `Dockerfile` to be re-built. Like `UP` this can either be whole-of-stack or just a named container, and runs from anywhere.
-* REBUILD (`docker-compose build --no-cache --pull`) is a more powerful form of BUILD. It requires a named container as an argument. It forces the download of any newer base image from DockerHub **and** forces the rebuild of the local image by applying the `Dockerfile`.
-* RESTART (`docker-compose restart`) requires a named container as an argument and sends a signal to the container to restart itself. It's closer to restarting the process inside the container than tearing down and reconstructing the container.
-* RECREATE is a function and requires a named container as an argument. Unlike RESTART, this does a full tear down and reconstruction of the container. It guarantees that what is running inside the container is the same as the image.
-* TERMINATE is also a function and requires a named container as an argument. It differs from RECREATE in that it only does a proper tear down of the container.
-* DOWN (`docker-compose down`) takes down your entire stack. The `down` command can't take a named container as an argument, which is why TERMINATE needs to exist.
-* PULL (`docker-compose pull` followed by `docker images`). The `pull` tells `docker-compose` to check for more-recent images on DockerBub and download any newer images:
-	* a PULL followed by an UP will update all containers which **don't** rely on Dockerfiles.
-	* a PULL followed by a BUILD will update all containers, except Node-Red (which needs special handling, see REBUILD).
+#### Alias: <a name="aliasBUILD"> `BUILD` {container …} </a>
 
-	Generally, any action (eg PULL, BUILD, REBUILD) that results in a new image should be followed by a `docker system prune` to clean up any obsolete images.   
-
-### Container-specific aliases
-
-In most cases, a named container will have a pair of aliases, ending with:
-
-* `_SERVICES`
-* `_SHELL`
-
-I have only provided aliases for the IOTstack containers that are installed on my system. That's because those are the only ones I can **test**. If you want to support other containers, either:
-
-* customise `dot_iotstack_aliases` (which might cause merge conflicts when you synchronise your local repository with GitHub); or
-* create your own alias file in parallel (eg `dot_my_iotstack_aliases`) and hook it up the same way.
-
-As you think about these aliases, remember that auto-completion is your friend. For example, holding down [SHIFT] key and pressing `IN` followed by [TAB] should auto-complete to `INFLUX_S`. Pressing [TAB] twice will provide the suggestions:
-
-```
-INFLUX_SERVICES  INFLUX_SHELL
+```bash
+$ docker-compose up -d --build {CONTAINER …}
 ```
 
-so pressing E then another [TAB] will auto-complete to `INFLUX_SERVICES`, and then you can press [RETURN] to execute the command.
+* Similar to [`UP`](#aliasUP) in that it adds the `--build` flag to re-build the local images for containers that are built with a `Dockerfile`.
+* Differs from [`REBUILD`](#aliasREBUILD) in that no attempt is made to pull down any later base image from DockerHub.
+* Without arguments, every service definition in your `docker-compose.yml` that includes a `build` directive will be re-built by running its Dockerfile.
+* With a list of named containers, it restricts itself to just those containers.
+* Should usually be followed by:
 
-#### «container»\_SERVICES alias
+	```bash
+	$ docker system prune
+	```
 
-This jumps to the appropriate services directory. For example:
+#### Function: <a name="funcDNET"> `DNET` {container …} </a>
 
+```bash
+$ docker ps --format "table {{.Names}}\t{{.Ports}}"
 ```
-$ INFLUX_SERVICES
+
+* The column list provided by the `--format` argument focuses on the container's networking aspects (ports etc).
+* Has the advantage that the information for each container usually fits on one line in the terminal window.
+* Optional arguments limit the display to named containers. Names are interpreted as wildcards.
+
+#### Alias: <a name="aliasDOWN"> `DOWN` </a>
+
+```bash
+$ docker-compose down
 ```
 
-expands to:
+* Takes down your entire stack.
+* The `down` command can't take arguments, which is why [`TERMINATE`](#aliasTERMINATE) needs to exist.
 
+#### Function :<a name="funcDPS"> `DPS` {container …} </a>
+
+```bash
+docker ps --format "table {{.Names}}\t{{.RunningFor}}\t{{.Status}}"
 ```
-$ cd ~/IOTstack/services/influxdb
+
+* The column list provided by the `--format` argument focuses on whether a container is running or in a restart loop.
+* Has the advantage that the information for each container usually fits on one line in the terminal window.
+* Optional arguments limit the display to named containers. Names are interpreted as wildcards.
+
+#### Alias: <a name="aliasI"> `I` </a>
+
+```bash
+$ cd ~/IOTstack
 $ ls
 ```
 
-The logic is that, if you need to go into a container's services directory, you are likely intending to manipulate one of the files so an automatic `ls` is helpful.
+* Changes the working directory to, and lists, the top-level IOTstack directory.
+* See also [`S`](#aliasS), [`T`](#aliasT) and [`V`](#aliasV).
 
-#### «container»\_SHELL alias
+#### Alias: <a name="aliasPULL"> `PULL` {container …} </a>
+
+```bash
+$ docker-compose pull {CONTAINER …}
+```
+
+* Tells `docker-compose` to check for more-recent images on DockerHub and download any newer images.
+* Only applies to service definitions with an `image` directive.
+* Without arguments, it tries to pull everything in your `docker-compose.yml`.
+* With a list of named containers, it restricts itself to just those containers.
+* Should usually be followed by:
+
+	```bash
+	$ UP
+	$ docker system prune
+	```
+
+#### Alias: <a name="aliasREBUILD"> `REBUILD` {container …} </a>
+
+```bash
+$ docker-compose build --no-cache --pull {CONTAINER …}
+```
+
+* Can be thought of as a more powerful form of [`BUILD`](#aliasBUILD). It forces the download of any newer base image from DockerHub **and** forces the rebuild of the local image by applying the `Dockerfile`.
+* Without arguments, it processes all service definitions with a `build` directive.
+* With a list of named containers, it restricts itself to just those containers.
+* Should usually be followed by:
+
+	```bash
+	$ UP
+	$ docker system prune
+	$ docker system prune
+	```
+	
+	The first `prune` removes the older local image, the second `prune` the older base image.
+
+#### Alias: <a name="aliasRECREATE"> `RECREATE` {container …} </a>
+
+```bash
+$ docker-compose up -d --force-recreate {CONTAINER …}
+```
+
+* Does a full tear down and reconstruction of the container. Unlike [`RESTART`](#aliasRESTART), it guarantees that the container starts the same as the image.
+* Without arguments, it recreates all running services.
+* With a list of named containers, it restricts itself to just those containers.
+
+#### Alias: <a name="aliasRESTART"> `RESTART` {container …} </a>
+
+```bash
+$ docker-compose restart {CONTAINER …}
+```
+
+* A restart sends a signal to the container to restart itself. It's closer to restarting the process inside the container than tearing down and reconstructing the container. Unlike [`RECREATE`](#aliasRECREATE), any changes made inside the container persist.  
+* Without arguments, it restarts all running services.
+* With a list of named containers, it restricts itself to just those containers.
+
+#### Alias: <a name="aliasS"> `S` </a>
+
+```bash
+$ cd ~/IOTstack/services
+$ ls
+```
+
+* Changes the working directory to, and lists, the IOTstack *services* directory.
+* See also [`I`](#aliasI), [`T`](#aliasT) and [`V`](#aliasV).
+
+#### Alias: <a name="aliasT"> `T` </a>
+
+```bash
+$ cd ~/IOTstack/.templates
+$ ls
+```
+
+* Changes the working directory to, and lists, the IOTstack *templates* directory.
+* See also [`I`](#aliasI), [`S`](#aliasS) and [`V`](#aliasV).
+
+#### Alias: <a name="aliasTERMINATE"> `TERMINATE` {container …} </a>
+
+```bash
+$ docker-compose rm --force --stop -v {CONTAINER …}
+```
+
+* Without arguments, it terminates all running services. The difference between this form and a a [`DOWN`](#aliasDOWN) is that the latter also destroys the internal networks.
+* With a list of named containers, it restricts itself to just those containers.
+
+#### Alias: <a name="aliasUP"> `UP` {container …} </a>
+
+```bash
+$ docker-compose up -d {CONTAINER …}
+```
+
+* Without arguments, it brings up your entire stack.
+* With a list of named containers, it restricts itself to just those containers. 
+
+#### Alias: <a name="aliasV"> `V` </a>
+
+```bash
+$ cd ~/IOTstack/volumes
+$ ls
+``` 
+
+* Changes the working directory to, and lists, the IOTstack *volumes* directory.
+* See also [`I`](#aliasI), [`S`](#aliasS) and [`T`](#aliasT).
+
+### Container-specific aliases
+
+#### Alias: <a name="aliasSHELL"> `«container»\_SHELL` </a>
 
 This opens a shell within the container. For example:
 
-```
+```bash
 $ INFLUX_SHELL
 ```
 
 expands to:
 
-```
+```bash
 $ docker exec -it influxdb bash
 ```
 
 Opening a shell within a container means that the next thing you see is a prompt from the shell running inside the container, and with the **container's** view of the file system. `INFLUX_SHELL` will result in a prompt like this:
 
-```
+```bash
 root@95b20550cb8a:/#
 ```
 
-where the "#" indicates "you are running as root" (which is another way of saying "you don't need to use `sudo` for anything"). To get out of a container shell, either press Control+D or type `exit` and press RETURN.
+where the "#" indicates "you are running as root" (which is another way of saying "you don't need to use `sudo` for anything"). To get out of a container shell, either press <kbd>control</kbd>+<kbd>d</kbd> or type `exit` and press <kbd>return</kbd>.
 
 Another benefit of using an alias scheme for common tasks is that you don't have to remember things like "most containers use `bash` but some, like Mosquitto, don't have `bash` so you need to use `ash` or `sh`, while others, like Portainer and Portainer-CE don't have any shell at all.
 
@@ -232,15 +368,13 @@ Notes:
 
 * If you are trying to develop a "«container»\_SHELL" alias of your own and find that `bash` doesn't work, try replacing `bash` with `ash`, and then `sh`.
 
-* If you're wondering about the `-it` option on «container»\_SHELL aliases, it means "interactive terminal". It's how `docker exec` knows to wait for human interaction, and why you have to type `exit` or press Control+D to get out of a container.
+* If you're wondering about the `-it` option on «container»\_SHELL aliases, think of it as "interactive terminal". It's really `-i` (keep STDIN connected) and `-t` (allocate a pseudo-TTY for output). It is how `docker exec` knows to wait for human interaction, and why you have to type `exit` or press <kbd>control</kbd>+<kbd>d</kbd> to get out of a container. 
 
-#### special cases
-
-##### "influx"
+#### Alias: <a name="aliasInflux"> `influx` { argument …} </a>
 
 The `influx` alias is an exception to my all-caps naming convention. It expands to:
 
-```
+```bash
 $ docker exec -it influxdb influx -precision=rfc3339
 ```
 
@@ -260,24 +394,24 @@ The `influx` command is InfluxDB's Command Line Interface.
 
 The `-precision=rfc3339` option tells `influx` to display timestamps in human-readable form rather than nanoseconds since 1/1/1970. The timestamps are in UTC but you can tell `influx` to convert them to your local time by adding a `tz()` function to queries, like this:
 
-```
+```sql
 SELECT * from «measurement» WHERE «criteria» tz('Australia/Sydney') 
 ```
 
 You can append any other arguments supported by the `influx` CLI to the `influx` alias and the fact that `docker exec` is involved becomes entirely transparent. For example, all of these are valid:
 
-```
+```bash
 $ influx
 $ influx -database=«database name»
 $ influx -type=flux
 $ influx -database=«database name» -type=flux
 ```
 
-##### "NODERED_DATA"
+#### Alias: <a name="aliasNODEREDDATA"> `NODERED_DATA` </a>
 
 This alias expands to:
 
-```
+```bash
 $ cd ~/IOTstack/volumes/nodered/data
 $ ls
 ```
