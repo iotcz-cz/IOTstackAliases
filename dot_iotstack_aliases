@@ -107,6 +107,8 @@ alias                  S='cd ~/IOTstack/services; ls'
 alias                  T='cd ~/IOTstack/.templates; ls'
 alias                  V='cd ~/IOTstack/volumes; ls'
 alias         aktualizuj='sudo apt update && sudo apt -y upgrade'
+alias             REBOOT='logger "EVENT MARK - sudo reboot";sudo reboot'
+alias           SHUTDOWN='logger "EVENT MARK - sudo shutdown -h now";sudo shutdown -h now'
 
 DPS() {
    DPS_CMD="docker ps --format \"table {{.Names}}\t{{.RunningFor}}\t{{.Status}}\""
