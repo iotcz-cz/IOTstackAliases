@@ -68,7 +68,7 @@ fi
 
 if [ $(isNamedContainer nut-upsd) -gt 0 ] ; then
    alias    NUTUPSD_SHELL='docker exec -it nut-upsd ash'
-   echo "     nut-upsd: NUTUPSD_SHELL"
+   echo "      nut-upsd: NUTUPSD_SHELL"
 fi
 
 if [ $(isNamedContainer octoprint) -gt 0 ] ; then
@@ -78,7 +78,7 @@ fi
 
 if [ $(isNamedContainer oscam) -gt 0 ] ; then
    alias    OSCAM_SHELL='docker exec -it oscam bash'
-   echo "     Oscam: OSCAM_SHELL"
+   echo "         Oscam: OSCAM_SHELL"
 fi
 
 if [ $(isNamedContainer pihole) -gt 0 ] ; then
