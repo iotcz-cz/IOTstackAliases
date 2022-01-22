@@ -13,7 +13,7 @@ if [ $(isNamedContainer adguardhome) -gt 0 ] ; then
    echo "       AdGuard: ADGUARD_SHELL"
 fi
 
-if [ $(isNamedContainer adguardhome) -gt 0 ] ; then
+if [ $(isNamedContainer apcupsd) -gt 0 ] ; then
    alias      APCUPSD_SHELL='docker exec -it apcupsd ash'
    echo "       apcupsd: APCUPSD_SHELL"
 fi
@@ -66,7 +66,7 @@ if [ $(isNamedContainer nodered) -gt 0 ] ; then
    echo "       NodeRed: NODERED_SHELL, NODERED_DATA"
 fi
 
-if [ $(isNamedContainer octoprint) -gt 0 ] ; then
+if [ $(isNamedContainer nut-upsd) -gt 0 ] ; then
    alias    NUTUPSD_SHELL='docker exec -it nut-upsd ash'
    echo "     nut-upsd: NUTUPSD_SHELL"
 fi
@@ -76,7 +76,7 @@ if [ $(isNamedContainer octoprint) -gt 0 ] ; then
    echo "     OctoPrint: OCTOPRINT_SHELL"
 fi
 
-if [ $(isNamedContainer octoprint) -gt 0 ] ; then
+if [ $(isNamedContainer oscam) -gt 0 ] ; then
    alias    OSCAM_SHELL='docker exec -it oscam bash'
    echo "     Oscam: OSCAM_SHELL"
 fi
