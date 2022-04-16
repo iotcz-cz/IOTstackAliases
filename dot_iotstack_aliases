@@ -122,6 +122,7 @@ alias                  S='cd ~/IOTstack/services; ls'
 alias                  T='cd ~/IOTstack/.templates; ls'
 alias                  V='cd ~/IOTstack/volumes; ls'
 alias         aktualizuj='sudo apt update && sudo apt -y upgrade'
+alias       synchronizuj='rclone sync -v ~/IOTstack/backups dropbox:IOTstack/backups/rpi4b --exclude "$LOGFILE" --exclude "influxdb/**"'
 alias             REBOOT='logger "EVENT MARK - sudo reboot";sudo reboot'
 alias           SHUTDOWN='logger "EVENT MARK - sudo shutdown -h now";sudo shutdown -h now'
 
