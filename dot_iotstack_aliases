@@ -39,7 +39,7 @@ if [ $(isNamedContainer home_assistant) -gt 0 ] ; then
 fi
 
 if [ $(isNamedContainer homebridge) -gt 0 ] ; then
-   alias           HB_SHELL='docker exec -it homebridge ash'
+   alias           HB_SHELL='docker exec -it homebridge bash'
    echo "    HomeBridge: HB_SHELL"
 fi
 
