@@ -8,102 +8,14 @@ isNamedContainer() {
    fi
 }
 
-if [ $(isNamedContainer adguardhome) -gt 0 ] ; then
-   alias      ADGUARD_SHELL='docker exec -it adguardhome ash'
-   echo "       AdGuard: ADGUARD_SHELL"
-fi
-
-if [ $(isNamedContainer apcupsd) -gt 0 ] ; then
-   alias      APCUPSD_SHELL='docker exec -it apcupsd ash'
-   echo "       apcupsd: APCUPSD_SHELL"
-fi
-
-if [ $(isNamedContainer gitea) -gt 0 ] ; then
-   alias        GITEA_SHELL='docker exec -it gitea bash'
-   echo "         Gitea: GITEA_SHELL"
-fi
-
-if [ $(isNamedContainer grafana) -gt 0 ] ; then
-   alias      GRAFANA_SHELL='docker exec -it grafana bash'
-   echo "       Grafana: GRAFANA_SHELL"
-fi
-
-if [ $(isNamedContainer homeassistant) -gt 0 ] ; then
-   alias           HA_SHELL='docker exec -it homeassistant bash'
-   echo " HomeAssistant: HA_SHELL"
-fi
-
-if [ $(isNamedContainer home_assistant) -gt 0 ] ; then
-   alias           HA_SHELL='docker exec -it home_assistant bash'
-   echo " HomeAssistant: HA_SHELL"
-fi
-
-if [ $(isNamedContainer homebridge) -gt 0 ] ; then
-   alias           HB_SHELL='docker exec -it homebridge bash'
-   echo "    HomeBridge: HB_SHELL"
-fi
-
 if [ $(isNamedContainer influxdb) -gt 0 ] ; then
    alias             influx='docker exec -it influxdb influx -precision=rfc3339'
-   alias       INFLUX_SHELL='docker exec -it influxdb bash'
-   echo "        Influx: influx, INFLUX_SHELL"
-fi
-
-if [ $(isNamedContainer mosquitto) -gt 0 ] ; then
-   alias    MOSQUITTO_SHELL='docker exec -it mosquitto ash'
-   echo "     Mosquitto: MOSQUITTO_SHELL"
-fi
-
-if [ $(isNamedContainer nextcloud) -gt 0 ] ; then
-   alias    NEXTCLOUD_SHELL='docker exec -it nextcloud bash'
-   alias NEXTCLOUD_DB_SHELL='docker exec -it nextcloud_db bash'
-   echo "     NextCloud: NEXTCLOUD_SHELL, NEXTCLOUD_DB_SHELL"
+   echo "        Influx: influx"
 fi
 
 if [ $(isNamedContainer nodered) -gt 0 ] ; then
-   alias      NODERED_SHELL='docker exec -it nodered bash'
    alias       NODERED_DATA='cd ~/IOTstack/volumes/nodered/data;ls'
-   echo "       NodeRed: NODERED_SHELL, NODERED_DATA"
-fi
-
-if [ $(isNamedContainer nut-upsd) -gt 0 ] ; then
-   alias    NUTUPSD_SHELL='docker exec -it nut-upsd ash'
-   echo "      nut-upsd: NUTUPSD_SHELL"
-fi
-
-if [ $(isNamedContainer octoprint) -gt 0 ] ; then
-   alias    OCTOPRINT_SHELL='docker exec -it octoprint bash'
-   echo "     OctoPrint: OCTOPRINT_SHELL"
-fi
-
-if [ $(isNamedContainer oscam) -gt 0 ] ; then
-   alias    OSCAM_SHELL='docker exec -it oscam bash'
-   echo "         Oscam: OSCAM_SHELL"
-fi
-
-if [ $(isNamedContainer pihole) -gt 0 ] ; then
-   alias       PIHOLE_SHELL='docker exec -it pihole bash'
-   echo "        PiHole: PIHOLE_SHELL"
-fi
-
-if [ $(isNamedContainer postgres) -gt 0 ] ; then
-   alias     POSTGRES_SHELL='docker exec -it postgres bash'
-   echo "      Postgres: POSTGRES_SHELL"
-fi
-
-if [ $(isNamedContainer telegraf) -gt 0 ] ; then
-   alias     TELEGRAF_SHELL='docker exec -it telegraf bash'
-   echo "      Telegraf: TELEGRAF_SHELL"
-fi
-
-if [ $(isNamedContainer wireguard) -gt 0 ] ; then
-   alias    WIREGUARD_SHELL='docker exec -it wireguard bash'
-   echo "     WireGuard: WIREGUARD_SHELL"
-fi
-
-if [ $(isNamedContainer zigbee2mqtt) -gt 0 ] ; then
-   alias       ZIGBEE_SHELL='docker exec -it zigbee2mqtt ash'
-   echo "        Zigbee: ZIGBEE_SHELL"
+   echo "       NodeRed: NODERED_DATA"
 fi
 
 unset -f isNamedContainer
@@ -127,7 +39,7 @@ alias             REBOOT='logger "EVENT MARK - sudo reboot";sudo reboot'
 alias           SHUTDOWN='logger "EVENT MARK - sudo shutdown -h now";sudo shutdown -h now'
 
 DPS() {
-   DPS_CMD="docker ps --format \"table {{.Names}}\t{{.RunningFor}}\t{{.Status}}\""
+   local DPS_CMD="docker ps --format \"table {{.Names}}\t{{.RunningFor}}\t{{.Status}}\""
    while (( "$#" )); do
       DPS_CMD="$DPS_CMD --filter name=$1"
       shift
@@ -136,7 +48,7 @@ DPS() {
 }
 
 DNET() {
-   DNET_CMD="docker ps --format \"table {{.Names}}\t{{.Ports}}\""
+   local DNET_CMD="docker ps --format \"table {{.Names}}\t{{.Ports}}\""
    while (( "$#" )); do
       DNET_CMD="$DNET_CMD --filter name=$1"
       shift
@@ -148,3 +60,45 @@ echo "        Docker: BUILD     | DPS       | DNET      {<kontejner> …}"
 echo "                PULL      | REBUILD   | RECREATE  {<kontejner> …}"
 echo "                RESTART   | TERMINATE | UP        {<kontejner> …}"
 echo "                DOWN, PRUNE, I, S, T, V"
+
+# define the path to the alias cache
+ALIAS_CACHE_DIR="$HOME/.cache/IOTstackAliases"
+ALIAS_CACHE="$ALIAS_CACHE_DIR/cache"
+
+# ensure the directory exists
+mkdir -p "$ALIAS_CACHE_DIR"
+
+# does the cache exist?
+if [ ! -f "$ALIAS_CACHE" ] ; then
+
+   # no! tell the user this may take some time
+   echo "Vytvářím $ALIAS_CACHE - toto může trvat nějakou dobu"
+
+   # initialise the cache file
+   echo "# Rebuilt $(date)" >"$ALIAS_CACHE"
+
+   # fetch the list of running containers
+   CONTAINERS=$(curl -s --unix-socket /var/run/docker.sock http://localhost/containers/json | jq -r '.[].Names | .[] | gsub("^/";"")')
+
+   # iterate the list
+   for CONTAINER in $CONTAINERS ; do
+      echo -n "   checking $CONTAINER - "
+      CANDIDATES=$(docker exec $CONTAINER which bash ash zsh sh) 
+      if [ $? -eq 1 ] ; then
+         FIRST=($CANDIDATES)
+         echo "$FIRST"
+         echo "alias ${CONTAINER^^}_SHELL='docker exec -it $CONTAINER $FIRST'" >>"$ALIAS_CACHE"
+      else
+         echo "nenalezen žádný shell"
+      fi
+   done
+
+fi
+
+# now, source the cache
+. "$ALIAS_CACHE"
+
+# clean up
+unset ALIAS_CACHE_DIR ALIAS_CACHE CONTAINERS CONTAINER CANDIDATES FIRST ALIASNAME
+
+echo "        Shelly: <CONTAINER>_SHELL (včechna písmena velkými)"
