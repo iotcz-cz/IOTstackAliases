@@ -98,7 +98,7 @@ if [ ! -f "$ALIAS_CACHE" ] ; then
          fi
       done
 
-      echo 'echo "        Shelly: <CONTAINER>_SHELL (včechna písmena velká)"' >>"$ALIAS_CACHE"
+      echo 'echo "        Shelly: <CONTAINER>_SHELL (všechna písmena velká)"' >>"$ALIAS_CACHE"
 
    else
 
